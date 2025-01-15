@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Timetable Generator</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <h1>Welcome to the Timetable Generator</h1>
+    <button onclick="generateTimetable()">Generate Timetable</button>
+    <div id="timetable">
+        <h2>Generated Timetable</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Course</th>
+                    <th>Teacher</th>
+                    <th>Classroom</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody id="timetable-body">
+                <!-- Timetable entries will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function generateTimetable() {
+            fetch('/api/timetable/generate')
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    // Fetch and display the timetable
+                    fetch('/api/timetable/entries')
+                        .then(response => response.json())
+                        .then(entries => {
+                            const timetableBody = document.getElementById('timetable-body');
+                            timetableBody.innerHTML = '';
+                            entries.forEach(entry => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${entry.dayOfWeek}</td>
+                                    <td>${entry.courseId}</td>
+                                    <td>${entry.teacherId}</td>
+                                    <td>${entry.classroomId}</td>
+                                    <td>${entry.startTime}</td>
+                                    <td>${entry.endTime}</td>
+                                `;
+                                timetableBody.appendChild(row);
+                            });
+                        });
+                });
+        }
+    </script>
+</body>
+</html>
